@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TrafikSim — Kokpit</title>
+    <script>
+        (function () {
+            var path = window.location.pathname;
+            var basePath = path.endsWith('/') || /\.[^/]+$/.test(path)
+                ? path.replace(/[^/]*$/, '')
+                : path + '/';
+            document.write('<base href="' + basePath.replace(/"/g, '&quot;') + '">');
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+    <nav class="topnav">
+        <div class="topnav-brand">
+            <span class="logo-mark"></span>
+            <span>TrafikSim</span>
+        </div>
+        <div class="topnav-links">
+            <a href="./">Kontrol</a>
+            <a href="monitor.html">İzleme</a>
+            <a href="map.html">Harita</a>
+            <a href="dashboard.html" class="current">Kokpit</a>
+            <a href="operator.html">Operatör</a>
+        </div>
+        <div id="dash-clock" class="dash-clock">--:--:--</div>
+        <div id="conn-pill" class="conn-pill disconnected">
+            <span class="dot"></span><span class="label"></span>
+        </div>
+    </nav>
+
+    <div class="dashboard-root">
+        <div id="dash-standby" class="dash-standby">
+            <div class="pulse-dot"></div>
+            <h1>Standby</h1>
+            <p>Acil durum aracı bekleniyor</p>
+        </div>
+
+        <div id="dash-active" class="dash-active" style="display:none;">
+            <div class="dash-banner">
+                <div class="banner-left">
+                    <span class="indicator"></span>
+                    <span>Acil durum aktif</span>
+                </div>
+                <div class="banner-count">
+                    <span id="banner-count-num">0</span> araç sahada
+                </div>
+            </div>
+            <div id="vehicle-grid" class="vehicle-grid"></div>
+        </div>
+    </div>
+
+    <script src="client-common.js"></script>
+    <script src="client-dashboard.js"></script>
+</body>
+</html>

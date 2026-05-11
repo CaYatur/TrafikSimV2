@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrafikSim — Harita</title>
+    <script>
+        (function () {
+            var path = window.location.pathname;
+            var basePath = path.endsWith('/') || /\.[^/]+$/.test(path)
+                ? path.replace(/[^/]*$/, '')
+                : path + '/';
+            document.write('<base href="' + basePath.replace(/"/g, '&quot;') + '">');
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="map-body">
+    <nav class="topnav">
+        <div class="topnav-brand">
+            <span class="logo-mark"></span>
+            <span>TrafikSim</span>
+        </div>
+        <div class="topnav-links">
+            <a href="./">Kontrol</a>
+            <a href="monitor.html">İzleme</a>
+            <a href="map.html" class="current">Harita</a>
+            <a href="dashboard.html">Kokpit</a>
+            <a href="operator.html">Operatör</a>
+        </div>
+        <div id="conn-pill" class="conn-pill disconnected">
+            <span class="dot"></span><span class="label"></span>
+        </div>
+    </nav>
+
+    <div class="map-stage">
+        <canvas id="trafficCanvas" width="1000" height="1000"></canvas>
+    </div>
+    <script src="client-common.js"></script>
+    <script src="client-map.js"></script>
+</body>
+</html>

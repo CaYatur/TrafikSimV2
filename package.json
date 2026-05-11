@@ -1,0 +1,13 @@
+{
+  "name": "trafiksim",
+  "version": "1.0.0",
+  "description": "Authoritative trafik simülasyonu sunucusu (kontrol + izleme arayuzleri).",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  }
+}

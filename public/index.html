@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrafikSim — Kontrol</title>
+    <script>
+        (function () {
+            var path = window.location.pathname;
+            var basePath = path.endsWith('/') || /\.[^/]+$/.test(path)
+                ? path.replace(/[^/]*$/, '')
+                : path + '/';
+            document.write('<base href="' + basePath.replace(/"/g, '&quot;') + '">');
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="topnav">
+        <div class="topnav-brand">
+            <span class="logo-mark"></span>
+            <span>TrafikSim</span>
+        </div>
+        <div class="topnav-links">
+            <a href="./" class="current">Kontrol</a>
+            <a href="monitor.html">İzleme</a>
+            <a href="map.html">Harita</a>
+            <a href="dashboard.html">Kokpit</a>
+            <a href="operator.html">Operatör</a>
+        </div>
+        <div id="conn-pill" class="conn-pill disconnected">
+            <span class="dot"></span><span class="label"></span>
+        </div>
+    </nav>
+
+    <div class="app-layout">
+        <div class="canvas-wrap">
+            <canvas id="trafficCanvas" width="1000" height="1000"></canvas>
+        </div>
+
+        <aside class="side-panel">
+            <h2>Kontrol</h2>
+
+            <div class="control-group">
+                <div class="row"><label>Trafik yoğunluğu</label><span class="value" id="density-value">2%</span></div>
+                <input type="range" id="traffic-density" min="1" max="100" value="2" step="1">
+            </div>
+
+            <div class="control-group">
+                <div class="row"><label>Işık süresi</label><span class="value" id="duration-value">10s</span></div>
+                <input type="range" id="light-duration" min="5" max="30" value="10" step="1">
+            </div>
+
+            <div class="control-group">
+                <label class="toggle-row">
+                    <input type="checkbox" id="adaptive-lights" checked>
+                    <span>Yoğunluğa göre ışık</span>
+                    <span class="value" id="adaptive-value">Açık</span>
+                </label>
+                <p class="hint">Yeşil yön, kavşağa yaklaşan araç yoğunluğuna göre seçilir.</p>
+            </div>
+
+            <div class="control-group">
+                <div class="row"><label>Hız çarpanı</label><span class="value" id="speed-value">1.0x</span></div>
+                <input type="range" id="car-speed" min="0.5" max="3" value="1" step="0.1">
+            </div>
+
+            <div class="control-group">
+                <div class="row"><label>Hızlanma</label><span class="value" id="acceleration-value">0.05</span></div>
+                <input type="range" id="car-acceleration" min="0.01" max="0.2" value="0.05" step="0.01">
+            </div>
+
+            <div class="control-group">
+                <div class="row"><label>Çarpışma mesafesi</label><span class="value" id="collision-value">150px</span></div>
+                <input type="range" id="collision-distance" min="50" max="200" value="150" step="10">
+            </div>
+
+            <div class="control-group">
+                <div class="row"><label>Hava durumu</label><span class="value" id="weather-value">Otomatik</span></div>
+                <select id="weather-mode" class="control-select">
+                    <option value="auto">Otomatik</option>
+                    <option value="clear">Açık</option>
+                    <option value="rain">Yağmur</option>
+                    <option value="snow">Kar</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <div class="row"><label>Günün zamanı</label><span class="value" id="time-value">Otomatik</span></div>
+                <select id="time-of-day" class="control-select">
+                    <option value="auto">Otomatik</option>
+                    <option value="morning">Sabah</option>
+                    <option value="noon">Öğle</option>
+                    <option value="evening">Akşam</option>
+                    <option value="night">Gece</option>
+                </select>
+            </div>
+
+            <div class="section-divider control-group">
+                <h3>Acil durum aracı</h3>
+                <p class="hint">Önce aracı seçin, sonra haritada bir şeride tıklayın.</p>
+                <div class="btn-row" style="flex-direction: column; gap: 4px;">
+                    <button class="veh-btn ambulance" data-emergency="ambulance">Ambulans</button>
+                    <button class="veh-btn firetruck" data-emergency="firetruck">İtfaiye</button>
+                    <button class="veh-btn police"    data-emergency="police">Polis</button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item"><div class="stat-label">Araç</div><div class="stat-value" id="car-count">0</div></div>
+                <div class="stat-item"><div class="stat-label">FPS</div><div class="stat-value" id="fps">0</div></div>
+                <div class="stat-item"><div class="stat-label">Bağlantı</div><div class="stat-value" id="tick">--</div></div>
+                <div class="stat-item"><div class="stat-label">Durum</div><div class="stat-value" id="run-state" style="font-size:12px;">—</div></div>
+            </div>
+
+            <div class="btn-row">
+                <button id="pause-btn" class="primary">Duraklat</button>
+                <button id="reset-btn" class="danger">Sıfırla</button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="client-common.js"></script>
+    <script src="client-control.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrafikSim — İzleme</title>
+    <script>
+        (function () {
+            var path = window.location.pathname;
+            var basePath = path.endsWith('/') || /\.[^/]+$/.test(path)
+                ? path.replace(/[^/]*$/, '')
+                : path + '/';
+            document.write('<base href="' + basePath.replace(/"/g, '&quot;') + '">');
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="topnav">
+        <div class="topnav-brand">
+            <span class="logo-mark"></span>
+            <span>TrafikSim</span>
+        </div>
+        <div class="topnav-links">
+            <a href="./">Kontrol</a>
+            <a href="monitor.html" class="current">İzleme</a>
+            <a href="map.html">Harita</a>
+            <a href="dashboard.html">Kokpit</a>
+            <a href="operator.html">Operatör</a>
+        </div>
+        <div id="conn-pill" class="conn-pill disconnected">
+            <span class="dot"></span><span class="label"></span>
+        </div>
+    </nav>
+
+    <div class="app-layout">
+        <div class="canvas-wrap">
+            <canvas id="trafficCanvas" width="1000" height="1000"></canvas>
+        </div>
+
+        <aside class="side-panel">
+            <h2>İzleme</h2>
+
+            <div id="emergency-panel" class="emergency-panel idle">
+                <div class="emergency-title">
+                    <span class="indicator"></span>
+                    <span id="emergency-title-text">Sakin</span>
+                </div>
+                <div id="emergency-details" class="emergency-details">
+                    Acil durum yok.
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Trafik ışıkları</h3>
+                <div id="lights-grid" class="lights-grid"></div>
+            </div>
+
+            <div class="section-divider control-group">
+                <h3>Manuel müdahale</h3>
+                <p class="hint">Yön seçilirse o yöne yeşil verilir, diğerleri kırmızı olur. Acil durumda devre dışı.</p>
+                <div class="dir-grid">
+                    <button data-override="2">▲ Üst</button>
+                    <button data-override="3">◄ Sol</button>
+                    <button data-override="1">► Sağ</button>
+                    <button data-override="0">▼ Alt</button>
+                </div>
+            </div>
+
+            <div class="section-divider control-group">
+                <h3>Acil araç yolla</h3>
+                <p class="hint">Önce aracı seçin, sonra haritada bir şeride tıklayın.</p>
+                <div class="btn-row" style="flex-direction: column; gap: 4px;">
+                    <button class="veh-btn ambulance" data-emergency="ambulance">Ambulans</button>
+                    <button class="veh-btn firetruck" data-emergency="firetruck">İtfaiye</button>
+                    <button class="veh-btn police"    data-emergency="police">Polis</button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item"><div class="stat-label">Araç</div><div class="stat-value" id="car-count">0</div></div>
+                <div class="stat-item"><div class="stat-label">FPS</div><div class="stat-value" id="fps">0</div></div>
+                <div class="stat-item"><div class="stat-label">Bağlantı</div><div class="stat-value" id="tick">--</div></div>
+                <div class="stat-item"><div class="stat-label">Durum</div><div class="stat-value" id="paused-state" style="font-size:12px;">—</div></div>
+            </div>
+
+            <div class="btn-row">
+                <button id="pause-btn" class="primary">Duraklat</button>
+                <button id="reset-btn" class="danger">Sıfırla</button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="client-common.js"></script>
+    <script src="client-monitor.js"></script>
+</body>
+</html>

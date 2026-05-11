@@ -1,0 +1,1046 @@
+/* ============================================================
+   TrafikSim — sade, modern koyu arayüz
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --bg:           #0c0d10;
+    --bg-elev-1:    #15171c;
+    --bg-elev-2:    #1c1f26;
+    --panel:        #14161b;
+    --panel-hover:  #1a1d24;
+    --border:       rgba(255, 255, 255, 0.06);
+    --border-mid:   rgba(255, 255, 255, 0.10);
+    --border-strong:rgba(255, 255, 255, 0.16);
+
+    --text:         #e8e9ec;
+    --text-dim:     #a4a7ae;
+    --text-muted:   #6b6f78;
+    --text-faint:   #4a4d55;
+
+    --accent:       #7aa2ff;
+    --green:        #2ec27e;
+    --yellow:       #e5a93a;
+    --red:          #e5484d;
+    --blue:         #5c8bff;
+
+    --shadow-sm:    0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md:    0 4px 16px rgba(0,0,0,0.35);
+    --shadow-lg:    0 12px 48px rgba(0,0,0,0.5);
+
+    --radius-sm:    6px;
+    --radius:       8px;
+    --radius-lg:    12px;
+
+    --topnav-h:     56px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+.mono, code, .tnum {
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+a { color: var(--text); text-decoration: none; }
+a:hover { color: var(--text); }
+
+/* ============================================================
+   Top nav
+   ============================================================ */
+.topnav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--topnav-h);
+    background: rgba(12, 13, 16, 0.85);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.topnav-brand {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.topnav-brand .logo-mark {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, #5c8bff 0%, #7aa2ff 100%);
+    display: inline-block;
+    position: relative;
+}
+.topnav-brand .logo-mark::after {
+    content: '';
+    position: absolute; inset: 4px;
+    background: var(--bg);
+    border-radius: 2px;
+}
+
+.topnav-links {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    margin-left: 12px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    white-space: nowrap;
+}
+.topnav-links::-webkit-scrollbar { display: none; }
+.topnav-links a {
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    transition: color .12s, background .12s;
+}
+.topnav-links a:hover { color: var(--text); background: var(--bg-elev-1); }
+.topnav-links a.current { color: var(--text); background: var(--bg-elev-2); }
+
+.conn-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px 4px 8px;
+    border-radius: 999px;
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+}
+.conn-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+}
+.conn-pill.connected .dot { background: var(--green); box-shadow: 0 0 0 3px rgba(46, 194, 126, 0.15); }
+.conn-pill.connected .label::after { content: 'Bağlı'; }
+.conn-pill.disconnected .label::after { content: 'Bağlantı yok'; }
+.topnav .conn-pill { flex-shrink: 0; }
+
+/* ============================================================
+   App layout (control + monitor)
+   ============================================================ */
+.app-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 14px;
+    padding: 14px;
+    max-width: 1700px;
+    margin: 0 auto;
+    height: calc(100vh - var(--topnav-h));
+    box-sizing: border-box;
+    align-items: stretch;
+}
+
+.canvas-wrap {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: #2a3018;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+    place-self: center start;
+}
+
+.canvas-wrap #trafficCanvas {
+    background-color: #4CAF50;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.side-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.side-panel h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.side-panel h3 {
+    margin: 4px 0 4px 0;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.section-divider {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+/* ============================================================
+   Form controls
+   ============================================================ */
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.control-group .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.control-group label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+}
+.control-group .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+.control-group .hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.45;
+    margin: 2px 0 0 0;
+}
+.control-select {
+    width: 100%;
+    height: 34px;
+    color: var(--text);
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    padding: 0 10px;
+    outline: none;
+}
+.control-select:focus {
+    border-color: var(--accent);
+}
+.toggle-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.toggle-row input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: var(--accent);
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--bg-elev-2);
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+    border: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--text);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    transition: transform .12s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); background: var(--accent); }
+input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px;
+    background: var(--text);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--bg);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+button {
+    padding: 8px 12px;
+    background: var(--bg-elev-1);
+    color: var(--text);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 13px;
+    transition: background .12s, border-color .12s, transform .08s;
+    line-height: 1.2;
+}
+button:hover:not(:disabled) {
+    background: var(--bg-elev-2);
+    border-color: var(--border-strong);
+}
+button:active:not(:disabled) { transform: translateY(1px); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+button.primary {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+}
+button.primary:hover:not(:disabled) {
+    background: var(--text-dim);
+    border-color: var(--text-dim);
+}
+
+button.danger {
+    background: transparent;
+    color: var(--red);
+    border-color: rgba(229, 72, 77, 0.25);
+}
+button.danger:hover:not(:disabled) {
+    background: rgba(229, 72, 77, 0.08);
+    border-color: rgba(229, 72, 77, 0.5);
+}
+
+button.paused {
+    background: var(--yellow);
+    color: var(--bg);
+    border-color: var(--yellow);
+}
+
+.btn-row { display: flex; gap: 6px; }
+.btn-row > button { flex: 1; }
+
+/* Acil araç butonları — sade dot işaretleyici */
+.veh-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.veh-btn::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+.veh-btn.ambulance { color: #e5484d; }
+.veh-btn.firetruck { color: #f76b1c; }
+.veh-btn.police    { color: #5c8bff; }
+
+.dir-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.dir-grid button { padding: 8px 6px; font-size: 12px; }
+
+/* ============================================================
+   Stats
+   ============================================================ */
+.stats {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+}
+.stats .stat-item .stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.stats .stat-item .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    margin-top: 1px;
+}
+
+/* ============================================================
+   Monitor — emergency panel & lights
+   ============================================================ */
+.emergency-panel {
+    border-radius: var(--radius);
+    padding: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-elev-1);
+    transition: all .25s;
+}
+.emergency-panel.idle {
+    border-color: rgba(46, 194, 126, 0.18);
+}
+.emergency-panel.active {
+    border-color: rgba(229, 72, 77, 0.45);
+    background: linear-gradient(180deg, rgba(229, 72, 77, 0.08), rgba(229, 72, 77, 0.02));
+}
+
+.emergency-title {
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.emergency-panel.active .emergency-title { color: var(--red); }
+.emergency-panel.idle .emergency-title { color: var(--green); }
+.emergency-title .indicator {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.emergency-panel.active .indicator { animation: pulse 1.4s ease-in-out infinite; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px transparent; }
+}
+
+.emergency-details {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    font-variant-numeric: tabular-nums;
+}
+.emergency-details b { color: var(--text); font-weight: 500; }
+
+/* Işık kartları */
+.lights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.light-card {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    text-align: left;
+    transition: border-color .2s, background .2s;
+    position: relative;
+}
+.light-card.state-red    { border-left: 2px solid var(--red); }
+.light-card.state-yellow { border-left: 2px solid var(--yellow); }
+.light-card.state-green  { border-left: 2px solid var(--green); }
+.light-card.current      { background: var(--bg-elev-2); }
+.light-card.emergency    { animation: emergency-flash 1.4s ease-in-out infinite; }
+
+@keyframes emergency-flash {
+    0%, 100% { border-color: var(--border); }
+    50% { border-color: var(--red); }
+}
+
+.light-dir {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.light-state {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 1px;
+    color: var(--text);
+}
+.light-card.state-red    .light-state { color: var(--red); }
+.light-card.state-yellow .light-state { color: var(--yellow); }
+.light-card.state-green  .light-state { color: var(--green); }
+
+.light-timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+}
+.light-queue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+}
+
+/* ============================================================
+   Dashboard / cockpit
+   ============================================================ */
+body.dashboard-body {
+    overflow: hidden;
+    height: 100vh;
+}
+
+.dashboard-root {
+    height: calc(100vh - var(--topnav-h));
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    gap: 12px;
+}
+
+.dash-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 0 4px;
+    flex-shrink: 0;
+}
+.dash-clock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+}
+
+/* Standby */
+.dash-standby {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-muted);
+}
+.dash-standby .pulse-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 0 rgba(46, 194, 126, 0.5);
+    animation: standbyPulse 2.6s ease-out infinite;
+}
+@keyframes standbyPulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 194, 126, 0.45); }
+    70% { box-shadow: 0 0 0 22px rgba(46, 194, 126, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 194, 126, 0); }
+}
+.dash-standby h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0;
+    color: var(--text);
+    letter-spacing: -0.01em;
+}
+.dash-standby p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Active */
+.dash-active {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.dash-banner {
+    background: linear-gradient(180deg, rgba(229, 72, 77, 0.12), rgba(229, 72, 77, 0.04));
+    border: 1px solid rgba(229, 72, 77, 0.35);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+}
+.dash-banner .banner-left {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.dash-banner .banner-left .indicator {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--red);
+    animation: pulse 1.4s ease-in-out infinite;
+}
+.dash-banner .banner-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Vehicle grid — adapts to N vehicles */
+.vehicle-grid {
+    flex: 1;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    overflow-y: auto;
+    min-height: 0;
+}
+/* tek araç → daha geniş ve yüksek görünüm */
+.vehicle-grid:has(> .v-card:only-child) { grid-template-columns: 1fr; }
+
+.v-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 14px;
+    min-height: 0;
+    overflow: hidden;
+    transition: border-color .25s;
+}
+.v-card.ambulance { border-left: 3px solid #e5484d; }
+.v-card.firetruck { border-left: 3px solid #f76b1c; }
+.v-card.police    { border-left: 3px solid #5c8bff; }
+
+.v-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.v-card-header .v-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.v-card-header .v-title .v-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.v-card.ambulance .v-title { color: #e5484d; }
+.v-card.firetruck .v-title { color: #f76b1c; }
+.v-card.police    .v-title { color: #5c8bff; }
+.v-card-header .v-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.v-card-body {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+    min-height: 0;
+}
+
+.v-gauge-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+.v-gauge-wrap canvas {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    display: block;
+}
+.v-gauge-meta {
+    display: flex;
+    gap: 14px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+}
+.v-gauge-meta b { color: var(--text); font-weight: 500; }
+
+.v-light {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.v-light-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #08090b;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px;
+}
+.v-light-stack .bulb {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg-elev-2);
+    transition: background .2s, box-shadow .2s;
+}
+.v-light-stack .bulb.on.red    { background: var(--red);    box-shadow: 0 0 12px rgba(229, 72, 77, 0.6); }
+.v-light-stack .bulb.on.yellow { background: var(--yellow); box-shadow: 0 0 12px rgba(229, 169, 58, 0.6); }
+.v-light-stack .bulb.on.green  { background: var(--green);  box-shadow: 0 0 12px rgba(46, 194, 126, 0.6); }
+
+.v-dist {
+    text-align: center;
+}
+.v-dist .lbl {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.v-dist .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+.v-card-footer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+.v-stat .lbl {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.v-stat .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+}
+
+.progress-track {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 3px;
+    background: var(--bg-elev-2);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width .25s;
+    border-radius: 999px;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 1100px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: calc(100vh - var(--topnav-h));
+    }
+    .canvas-wrap {
+        height: auto;
+        max-height: calc(100vh - 90px);
+        place-self: center;
+    }
+    .side-panel { height: auto; }
+}
+
+@media (max-width: 720px) {
+    .v-card-body { grid-template-columns: 1fr; }
+    .v-light { flex-direction: row; gap: 14px; justify-content: center; }
+    .v-light-stack { flex-direction: row; }
+}
+
+/* ============================================================
+   Map view — sadece harita, panel yok
+   ============================================================ */
+body.map-body {
+    overflow: hidden;
+    height: 100vh;
+    background: #0a0b0e;
+}
+.map-stage {
+    height: calc(100vh - var(--topnav-h));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+.map-stage #trafficCanvas {
+    width: min(100%, calc(100vh - var(--topnav-h) - 24px));
+    height: auto;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--radius-lg);
+    background: #4CAF50;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    display: block;
+}
+
+/* ============================================================
+   Operator — 3 fazlı sürücü ekranı
+   ============================================================ */
+body.operator-body {
+    overflow: hidden;
+    height: 100vh;
+}
+.op-topbar {
+    background: var(--panel);
+}
+.op-topbar .topnav-brand { flex: 0 0 auto; }
+.op-topbar .topnav-links { flex: 0 1 auto; }
+.op-phase-label {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+}
+
+.op-phase {
+    height: calc(100vh - var(--topnav-h));
+    box-sizing: border-box;
+}
+
+/* FAZ 1: Araç seç */
+.op-select {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    gap: 24px;
+}
+.op-select h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    text-align: center;
+}
+.op-subtitle {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 14px;
+    text-align: center;
+    max-width: 540px;
+    line-height: 1.6;
+}
+.op-vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(240px, 320px));
+    gap: 16px;
+    margin-top: 16px;
+}
+.op-vehicle-card {
+    background: var(--panel);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color .15s, background .15s, transform .08s;
+    color: var(--text);
+}
+.op-vehicle-card:hover {
+    background: var(--panel-hover);
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+}
+.op-vehicle-card:active { transform: translateY(0); }
+.op-vehicle-card.ambulance:hover { border-color: rgba(229, 72, 77, 0.5); }
+.op-vehicle-card.firetruck:hover { border-color: rgba(247, 107, 28, 0.5); }
+.op-vehicle-card.police:hover    { border-color: rgba(92, 139, 255, 0.5); }
+
+.op-vehicle-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--bg-elev-2);
+    position: relative;
+    margin-bottom: 8px;
+}
+.op-vehicle-card.ambulance .op-vehicle-mark { background: rgba(229, 72, 77, 0.12); border: 1px solid rgba(229, 72, 77, 0.4); }
+.op-vehicle-card.firetruck .op-vehicle-mark { background: rgba(247, 107, 28, 0.12); border: 1px solid rgba(247, 107, 28, 0.4); }
+.op-vehicle-card.police    .op-vehicle-mark { background: rgba(92, 139, 255, 0.12); border: 1px solid rgba(92, 139, 255, 0.4); }
+.op-vehicle-card.ambulance .op-vehicle-mark::after {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 14px;
+    transform: translate(-50%, -50%);
+    background: #e5484d; border-radius: 50%;
+    box-shadow: inset 4px 0 0 0 #14161b;
+}
+.op-vehicle-card.firetruck .op-vehicle-mark::after {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 14px;
+    transform: translate(-50%, -50%);
+    background: #f76b1c; border-radius: 3px;
+}
+.op-vehicle-card.police .op-vehicle-mark::after {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 14px;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(180deg, #5c8bff 50%, #e5484d 50%); border-radius: 3px;
+}
+
+.op-vehicle-name {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+.op-vehicle-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* FAZ 2: Şerit seç */
+.op-place {
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    gap: 10px;
+}
+.op-place-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.op-place-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+}
+.op-canvas-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+.op-canvas-wrap canvas {
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1/1;
+    max-width: 100%;
+    border-radius: var(--radius-lg);
+    background: #4CAF50;
+    border: 1px solid var(--border);
+    cursor: crosshair;
+    box-shadow: var(--shadow-lg);
+    display: block;
+}
+
+/* FAZ 3: Kokpit (tek araç, geniş) */
+.op-cockpit {
+    display: flex;
+    padding: 14px;
+}
+.op-cockpit > .op-card-large {
+    width: 100%;
+    height: 100%;
+}
+.op-card-large {
+    padding: 24px;
+    gap: 20px;
+}
+.op-card-large .v-card-header .v-title { font-size: 16px; }
+.op-card-large .v-card-header .v-id { font-size: 13px; }
+.op-card-large .v-light-stack.op-stack-large .bulb { width: 56px; height: 56px; }
+.op-card-large .v-dist .val { font-size: 22px; }
+.op-card-large .v-stat .val { font-size: 14px; }
+.op-card-large .v-card-body { gap: 32px; }
+
+@media (max-width: 720px) {
+    .op-vehicle-grid { grid-template-columns: 1fr; max-width: 360px; }
+    .op-card-large { padding: 14px; gap: 12px; }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }

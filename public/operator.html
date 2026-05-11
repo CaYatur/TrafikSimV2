@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TrafikSim — Operatör</title>
+    <script>
+        (function () {
+            var path = window.location.pathname;
+            var basePath = path.endsWith('/') || /\.[^/]+$/.test(path)
+                ? path.replace(/[^/]*$/, '')
+                : path + '/';
+            document.write('<base href="' + basePath.replace(/"/g, '&quot;') + '">');
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="operator-body">
+    <nav class="topnav op-topbar">
+        <div class="topnav-brand">
+            <span class="logo-mark"></span>
+            <span>TrafikSim</span>
+        </div>
+        <div class="topnav-links">
+            <a href="./">Kontrol</a>
+            <a href="monitor.html">İzleme</a>
+            <a href="map.html">Harita</a>
+            <a href="dashboard.html">Kokpit</a>
+            <a href="operator.html" class="current">Operatör</a>
+        </div>
+        <div id="op-phase-label" class="op-phase-label">Araç seçimi</div>
+        <div id="conn-pill" class="conn-pill disconnected">
+            <span class="dot"></span><span class="label"></span>
+        </div>
+    </nav>
+
+    <!-- FAZ 1: Araç seç -->
+    <section id="phase-select" class="op-phase op-select">
+        <h1>Hangi araç görevde?</h1>
+        <p class="op-subtitle">Bir araç tipi seçin, ardından haritadan başlangıç şeridini işaretleyeceksiniz.</p>
+        <div class="op-vehicle-grid">
+            <button class="op-vehicle-card ambulance" data-type="ambulance">
+                <div class="op-vehicle-mark"></div>
+                <div class="op-vehicle-name">Ambulans</div>
+                <div class="op-vehicle-sub">Sağlık · Acil müdahale</div>
+            </button>
+            <button class="op-vehicle-card firetruck" data-type="firetruck">
+                <div class="op-vehicle-mark"></div>
+                <div class="op-vehicle-name">İtfaiye</div>
+                <div class="op-vehicle-sub">Yangın · Kurtarma</div>
+            </button>
+            <button class="op-vehicle-card police" data-type="police">
+                <div class="op-vehicle-mark"></div>
+                <div class="op-vehicle-name">Polis</div>
+                <div class="op-vehicle-sub">Güvenlik · Olay yeri</div>
+            </button>
+        </div>
+    </section>
+
+    <!-- FAZ 2: Şerit seç (harita) -->
+    <section id="phase-place" class="op-phase op-place" style="display:none;">
+        <div class="op-place-header">
+            <div>
+                <h2 id="place-title">Başlangıç şeridini seçin</h2>
+                <p class="op-subtitle">Vurgulanan şeritlerden birine dokunun.</p>
+            </div>
+            <button id="place-cancel" class="danger">Vazgeç</button>
+        </div>
+        <div class="op-canvas-wrap">
+            <canvas id="opMapCanvas" width="1000" height="1000"></canvas>
+        </div>
+    </section>
+
+    <!-- FAZ 3: Kokpit (tek araç) -->
+    <section id="phase-cockpit" class="op-phase op-cockpit" style="display:none;">
+        <div id="op-vcard" class="v-card op-card-large"></div>
+    </section>
+
+    <script src="client-common.js"></script>
+    <script src="client-operator.js"></script>
+</body>
+</html>
